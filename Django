@@ -1,0 +1,54 @@
+Question 1:
+By default, django signals are excuted synchronously.
+
+
+Code:
+    import time
+    from django.dispatch import Signal, receiver
+
+    testsignal=Signal()
+    
+    @receiver(testsignal)
+    def Handler(sender,**kwargs):
+        print("handle started")
+        time.sleep()
+        print("handle finished")
+
+
+    def trigger_signal():
+    print("before signal")
+    testsignal.send(sender=None)
+    print("After signal")
+
+
+
+Question 2:
+Yes, by default django signal runs in same threads
+
+Code:
+    import threading
+    from django.dispatch import Signal, receiver
+
+    testsignal = Signal()
+
+    @receiver(testsignal)
+    def handler(sender, **kwargs):
+        print(f"Signal handler thread: {threading.current_thread().name}")
+
+
+    def trigger_signal():
+        print(f"Caller thread: {threading.current_thread().name}")
+        testsignal.send(sender=None)
+
+
+Question 3:
+Yes, by default, Django signals run in the same database transaction  the call
+code:
+    from django.db import transaction
+    from myapp.models import MyModel 
+
+    def trigger_signal():
+        with transaction.atomic():
+            print("transction status")
+
+
